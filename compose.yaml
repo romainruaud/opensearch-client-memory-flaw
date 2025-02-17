@@ -1,0 +1,46 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.12.0
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - app-network
+
+  php-app-231:
+    build:
+      context: ./php-app-231
+      dockerfile: Dockerfile
+    container_name: php-app-231
+    volumes:
+      - ./php-app-231:/var/www/html
+      - ./benchmark.php:/var/www/html/benchmark.php
+    networks:
+      - app-network
+    depends_on:
+      - opensearch
+
+  php-app-241:
+    build:
+      context: ./php-app-241
+      dockerfile: Dockerfile
+    container_name: php-app-241
+    volumes:
+      - ./php-app-241:/var/www/html
+      - ./benchmark.php:/var/www/html/benchmark.php
+    networks:
+      - app-network
+    depends_on:
+      - opensearch
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  php-app-231:
+  php-app-241:
